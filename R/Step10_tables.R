@@ -66,11 +66,17 @@ fwrite(t2, file.path(O,"Table2_LDSC_rg.csv"))
 fw <- fread(file.path(B,"mr/mr_summary_forward.csv")); fw[,Direction:="Asthma → psychiatric"]
 rv <- fread(file.path(B,"mr/mr_summary_reverse.csv")); rv[,Direction:="Psychiatric → asthma"]
 mm <- rbindlist(list(fw,rv),fill=TRUE)
+## MR-PRESSO P 와 Steiger 는 Step13 최종값(TableS8)에서 가져옴 (mr_summary_*.csv 의 값은 Step4 당시 1,000회·연속형 Steiger)
+s8 <- fread(file.path(O,"TableS8_MR_sensitivity.csv"), colClasses="character")
+mm <- merge(mm, s8[,.(EXPOSURE=Exposure, OUTCOME=Outcome, PRESSO_P13=`MR-PRESSO global P`, STEIGER_P13=`Steiger P`)],
+            by=c("EXPOSURE","OUTCOME"), all.x=TRUE, sort=FALSE)
+mm[,dord:=match(Direction,c("Asthma → psychiatric","Psychiatric → asthma"))][,eord:=match(EXPOSURE,c("COA","AOA","MDD","ANX"))][,oord:=match(OUTCOME,c("MDD","ANX","COA","AOA"))]; setorder(mm,dord,eord,oord)
+## JACI: OR·CI 는 소수 둘째 자리까지
 t3 <- mm[,.(Direction, Exposure=NAME[EXPOSURE], Outcome=NAME[OUTCOME], `N IV`=N_IV,
-  `F`=sprintf("%.0f",F_MEAN), `OR (95% CI)`=sprintf("%.3f (%.3f–%.3f)",IVW_OR,IVW_LCI,IVW_UCI),
+  `F`=sprintf("%.0f",F_MEAN), `OR (95% CI)`=sprintf("%.2f (%.2f–%.2f)",IVW_OR,IVW_LCI,IVW_UCI),
   `IVW P`=fmtP(IVW_P), `P (FDR)`=fmtP(IVW_P_FDR),
   `Egger int. P`=fmtP(EGGER_INT_P), `Q P`=fmtP(Q_P),
-  `MR-PRESSO P`=PRESSO_P, `Steiger OK`=STEIGER_OK)]
+  `MR-PRESSO P`=PRESSO_P13, `Steiger P (liability)`=STEIGER_P13)]
 fwrite(t3, file.path(O,"Table3_MR_main.csv"))
 
 ## ---------- Table 4: immune tissue cis-MR + colocalization ---------- ##
@@ -136,7 +142,7 @@ library(openxlsx)
 SHEETS <- list(
  c("Table 1. Traits","Table1_traits.csv","GWAS datasets, heritability and LDSC intercept for the nine primary traits, and the exposure datasets used for multivariable MR and for replication."),
  c("Table 2. LDSC rg","Table2_LDSC_rg.csv","Genetic correlations of asthma subtypes with psychiatric and lung-function traits."),
- c("Table 3. MR main","Table3_MR_main.csv","Bidirectional two-sample MR (IVW) between asthma subtypes and depression/anxiety."),
+ c("Table 3. MR main","Table3_MR_main.csv","Bidirectional two-sample MR (IVW) between asthma subtypes and depression/anxiety. MR-PRESSO global P (seed 20260911, 10,000 simulations) and liability-scale Steiger P are the final values from Table S8."),
  c("Table 4. MVMR","Table4_MVMR.csv","Multivariable MR of depression, BMI and smoking initiation on asthma subtypes (IVW-MVMR, MVMR-Egger, MVMR-median; conditional F; Q)."),
  c("Table 5. Immune coloc","Table5_immune_coloc.csv","Tissue cis-MR of candidate immune genes and colocalization (coloc, full window and +/-100 kb). SuSiE-based colocalization was not evaluable for any pair."),
  c("S1. LDSC rg all","TableS1_LDSC_rg_all.csv","All pairwise LDSC genetic correlations."),

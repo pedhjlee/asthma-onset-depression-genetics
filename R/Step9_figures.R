@@ -9,10 +9,12 @@ RED<-"#B2182B"; BLU<-"#2166AC"; GREY<-"grey70"
 LAB <- c(COA="Childhood-onset asthma", AOA="Adult-onset asthma", MDD="Depression",
          ANX="Anxiety", BIP="Bipolar", SCZ="Schizophrenia",
          FEV1="FEV1", FVC="FVC", LUNG="FEV1/FVC ratio")
-th <- theme_minimal(base_size=11) +
+## JACI: 그림 내 글꼴 Times New Roman, 형식 TIFF/JPG ≥300 dpi
+FF <- "serif"   # Windows 에서 serif = Times New Roman
+th <- theme_minimal(base_size=11, base_family=FF) +
   theme(panel.grid.minor=element_blank(),
-        plot.title=element_text(face="bold",size=12),
-        plot.tag=element_text(face="bold",size=14),
+        plot.title=element_text(face="bold",size=12,family=FF),
+        plot.tag=element_text(face="bold",size=14,family=FF),
         axis.text=element_text(color="grey20"))
 
 ## ================= FIG 1 — Shared genetic architecture (LDSC) ============= ##
@@ -31,7 +33,7 @@ hm[,star:=ifelse(!is.na(pf)&pf<0.05,"*","")]
 hm[,rglab:=ifelse(is.na(rg),"",sprintf("%.2f%s",rg,star))]
 f1a <- ggplot(hm,aes(V1,V2,fill=rg))+
   geom_tile(color="white",linewidth=.6)+
-  geom_text(aes(label=rglab),size=2.7)+
+  geom_text(aes(label=rglab),size=2.7,family=FF)+
   scale_fill_gradient2(low=BLU,mid="white",high=RED,midpoint=0,limits=c(-1,1),
      na.value="grey92",name=expression(r[g]))+
   scale_x_discrete(labels=LAB)+scale_y_discrete(labels=LAB)+
@@ -59,6 +61,7 @@ f1b <- ggplot(fo,aes(rg,trait,color=sub,shape=sig))+
   th+theme(legend.position="bottom")
 f1 <- (f1a|f1b)+plot_layout(widths=c(1.25,1))+plot_annotation(tag_levels="a")
 ggsave(file.path(O,"Fig1_shared_architecture.png"),f1,width=13,height=5.6,dpi=300,bg="white")
+ggsave(file.path(O,"Fig1_shared_architecture.tiff"),f1,width=13,height=5.6,dpi=300,bg="white",compression="lzw")
 
 ## ================= FIG 2 — Causal architecture (MR) ====================== ##
 fw <- fread(file.path(B,"mr/mr_summary_forward.csv"))
@@ -105,6 +108,7 @@ f2b <- ggplot(sel,aes(b,pair,color=sig))+
   th+theme(strip.text=element_text(face="bold",hjust=0),strip.background=element_blank())
 f2 <- (f2a/f2b)+plot_layout(heights=c(1,1.05))+plot_annotation(tag_levels="a")
 ggsave(file.path(O,"Fig2_causal_MR.png"),f2,width=9.2,height=8.6,dpi=300,bg="white")
+ggsave(file.path(O,"Fig2_causal_MR.tiff"),f2,width=9.2,height=8.6,dpi=300,bg="white",compression="lzw")
 
 ## ================= FIG 3 — Pleiotropy & shared loci ====================== ##
 pl <- fread(file.path(B,"placo/placo_summary.csv"))
@@ -115,7 +119,7 @@ pl[,sub:=factor(EXPOSURE,levels=c("COA","AOA"),labels=c("Childhood","Adult-onset
 pl[,olab:=factor(OUTCOME,levels=c("MDD","ANX","BIP","SCZ","LUNG"))]
 f3a <- ggplot(pl,aes(olab,N_LOCI,fill=dom))+
   geom_col(width=.7,color="grey30",position=position_dodge())+
-  geom_text(aes(label=N_LOCI),vjust=-0.3,size=3,position=position_dodge(.7))+
+  geom_text(aes(label=N_LOCI),vjust=-0.3,size=3,family=FF,position=position_dodge(.7))+
   facet_wrap(~sub,nrow=1)+
   scale_fill_manual(values=c(`Depression/anxiety`=RED,`Other psychiatric`="#E39A9A",
      `Lung function`=BLU),name=NULL)+
@@ -145,13 +149,14 @@ cnt2[,type:=factor(type,levels=c("n","n_imm"),labels=c("All sig loci","Immune-ge
 f3b <- ggplot(cnt2,aes(val,pair,fill=type))+
   geom_col(data=cnt2[type=="All sig loci"],width=.62,fill="grey80")+
   geom_col(data=cnt2[type=="Immune-gene loci"],width=.62,fill=RED)+
-  geom_text(data=cnt[,.(pair,n)],aes(n,pair,label=n),inherit.aes=FALSE,hjust=-0.3,size=3)+
+  geom_text(data=cnt[,.(pair,n)],aes(n,pair,label=n),inherit.aes=FALSE,hjust=-0.3,size=3,family=FF)+
   scale_x_continuous(expand=expansion(mult=c(0,0.12)))+
   labs(title="Local genetic correlations (LAVA)",
        subtitle="grey = FDR<0.05 local rg; red = blocks with annotated immune-related genes (descriptive)",
        x="N FDR-significant local rg blocks",y=NULL)+th
 f3 <- (f3a/f3b)+plot_layout(heights=c(1,1))+plot_annotation(tag_levels="a")
 ggsave(file.path(O,"Fig3_pleiotropy_loci.png"),f3,width=9.5,height=8.2,dpi=300,bg="white")
+ggsave(file.path(O,"Fig3_pleiotropy_loci.tiff"),f3,width=9.5,height=8.2,dpi=300,bg="white",compression="lzw")
 
 ## ================= FIG 4 — cis-MR vs colocalization ====================== ##
 tm <- fread(file.path(B,"mr/mr_tissue_cis.csv"))
@@ -176,12 +181,13 @@ co[,strong:=PP_H4>=0.8]
 f4b <- ggplot(co,aes(PP_H4,lab))+
   geom_col(width=.62,fill="grey70",color="grey30")+
   geom_vline(xintercept=0.8,linetype=2,color=RED)+
-  geom_text(aes(label=sprintf("%.2f",PP_H4)),hjust=-0.2,size=2.9)+
+  geom_text(aes(label=sprintf("%.2f",PP_H4)),hjust=-0.2,size=2.9,family=FF)+
   scale_x_continuous(limits=c(0,1.05),breaks=seq(0,1,.2),expand=expansion(mult=c(0,0.05)))+
   labs(title="Colocalization (coloc, PP.H4)",
        subtitle="dashed line = PP.H4 0.8; no tested pair met the threshold",
        x="PP.H4 (shared causal variant)",y=NULL)+th
 f4 <- (f4a|f4b)+plot_annotation(tag_levels="a")
 ggsave(file.path(O,"Fig4_cisMR_vs_coloc.png"),f4,width=11.5,height=4.8,dpi=300,bg="white")
+ggsave(file.path(O,"Fig4_cisMR_vs_coloc.tiff"),f4,width=11.5,height=4.8,dpi=300,bg="white",compression="lzw")
 
 cat("DONE\n"); print(list.files(O))
