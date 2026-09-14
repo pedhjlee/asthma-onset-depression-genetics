@@ -1,0 +1,25 @@
+# Data — never commit GWAS sumstats, harmonized objects, or LD references
+raw/
+harmonized/
+ld_ref/
+eur_w_ld_chr/
+*.rds
+*.sumstats.gz
+*.vcf.gz
+*.vcf.gz.tbi
+*.txt.gz
+*.tsv.gz
+*.all.tsv.gz*
+QTD*.tsv*
+# Result artifacts (regenerable) — keep code, not large outputs
+Result/*.xlsx
+Result/*.png
+coloc/*.png
+mr/*.png
+fig/
+# R / OS cruft
+.Rhistory
+.RData
+.Rproj.user/
+.DS_Store
+Thumbs.db
