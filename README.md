@@ -111,6 +111,6 @@ under their original licenses.
 
 ## Contact
 
-Hye Jin Lee, MD, PhD — Division of Allergy and Pulmonology, Department of Pediatrics,
+Hyejin Lee, MD, PhD — Division of Allergy and Pulmonology, Department of Pediatrics,
 Seoul St. Mary's Hospital, College of Medicine, The Catholic University of Korea.
-[e-mail — to be added]
+pedhjlee@gmail.com
