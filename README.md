@@ -1,4 +1,4 @@
-# Age at asthma onset and shared genetic liability with depression and anxiety
+# Age at asthma onset and shared genetic liability with depression and anxiety: genetic correlation and Mendelian randomization
 
 Analysis code for a genetic-epidemiology study of the shared genetic architecture and
 Mendelian randomization (MR) relationships between **childhood-onset (COA)** and
@@ -40,14 +40,16 @@ sub-directories of the project folder (`harmonized/`, `ldsc/`, `lava/`, `placo/`
 | 8d | `R/Step8d_coloc_susie.R` | SuSiE-based colocalization allowing multiple causal variants |
 | 11 | `R/Step11_mvmr.R` | Multivariable MR: depression + BMI + smoking initiation → asthma subtypes |
 | 11b | `R/Step11b_mvmr_qhet.R` | MVMR Q-minimization sensitivity (weak instruments) |
-| 12 | `R/Step12_finngen_replication.R` | Replication in FinnGen R13 (Howard 2019 depression exposure); provisional Table S11 |
-| 13 | `R/Step13_final_sensitivity.R` | Final sensitivity analyses: MR-PRESSO (seed 20260911, 10,000 simulations), liability-scale Steiger across prevalence grids, final Tables S8 / S11 / S12 |
-| 9 | `R/Step9_figures.R` | Manuscript Figures 1–4 |
-| 10 | `R/Step10_tables.R` | Manuscript tables (main Tables 1–5, supplementary S1–S12) and assembled workbook |
+| 12 | `R/Step12_finngen_replication.R` | Replication in FinnGen R13 (Howard 2019 depression exposure); provisional Table E11 |
+| 13 | `R/Step13_final_sensitivity.R` | Final sensitivity analyses: MR-PRESSO (seed 20260911, 10,000 simulations), liability-scale Steiger across prevalence grids, final Tables E8 / E11 / E12 |
+| 14 | `R/Step14_subtype_contrasts.R` | Subtype contrasts: Δr<sub>g</sub> (adult- minus childhood-onset) by the delta method using the full LDSC sampling covariance, and MR contrasts (Table E9) |
+| 9 | `R/Step9_figures.R` | Manuscript Figures 1–4 (base panels; 600-dpi TIFF and vector PDF) |
+| 9b | `R/Step9b_figures_v2.R` | Submission versions of Figure 1 (adds panel C, Δr<sub>g</sub> forest) and Figure 3 (panel A as LAVA chromosome ideogram); sources Step 9 |
+| 10 | `R/Step10_tables.R` | Manuscript tables (main Tables I–IV, Online Repository Tables E1–E14) and assembled workbooks; P values in JACI style |
 
 Run order for a full reproduction: 0 → 0b → 0c → 1 → 2 → 3 → 4 → 5 → 7 → 8a → 8b → 8c → 8d →
-11 → 11b → 12 → 13 → 9 → 10. Step 13 must be run after Step 12; running Step 12 alone
-overwrites Table S11 with provisional values.
+11 → 11b → 12 → 13 → 14 → 9 → 9b → 10. Step 13 must be run after Step 12; running Step 12 alone
+overwrites Table E11 with provisional values. Step 9b sources Step 9, and Step 10 reads the Step 13/14 outputs.
 
 ## Reproducing the analysis
 
@@ -57,8 +59,8 @@ overwrites Table S11 with provisional values.
    and `PATH/TO/ldref_ascii` (a copy of the EUR PLINK files on a path without spaces or
    non-ASCII characters, which PLINK requires).
 2. **Obtain inputs.** Download the GWAS summary statistics listed below into `raw/`.
-3. **Run in order** with `source()` from R. Steps 9–10 read the result CSVs from earlier steps
-   and regenerate all figures and tables under `Result/`.
+3. **Run in order** with `source()` from R. Steps 9, 9b and 10 read the result CSVs from earlier steps
+   and regenerate all figures and tables under `Result/` and `Submission/`.
 
 ### Software
 
@@ -76,7 +78,7 @@ overwrites Table S11 with provisional values.
 | data.table | 1.17.8 / 1.18.6.1 |
 | ggplot2 | 4.0.0 / 4.0.3 |
 
-Other packages: coloc, susieR, Rsamtools, patchwork, openxlsx, psych. Exact versions for each
+Other packages: coloc, susieR, Rsamtools, patchwork, ggrepel, ragg, openxlsx, psych. Exact versions for each
 step are recorded in the `_stepN_sessionInfo_*.txt` files written by the scripts.
 
 > `Step3_placo.R` requires the `PLACO` function source (`PLACO_v0.2.0.R`) obtained from the
