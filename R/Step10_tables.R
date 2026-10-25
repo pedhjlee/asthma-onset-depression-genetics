@@ -6,18 +6,19 @@ suppressPackageStartupMessages({
 B <- "PATH/TO/PROJECT"        # 프로젝트 루트
 O <- file.path(B,"Result","tables_csv"); dir.create(O, showWarnings=FALSE, recursive=TRUE)
 ## ★ 표 버전: 내용이 바뀔 때마다 올릴 것 (큰 변화 = 정수, 소수정·재계산 = 소수점). 파일명에 붙음.
-TAB_VER <- "5.8"
-TAB_NOTE <- "v5.8 (2026-10-10): all P values and scientific notation in E-tables converted to JACI style at workbook assembly (jaci_cells); E9 internal note removed; tissue labels spelled out. v5.7 (2026-10-08): P values in JACI style (two decimals, three when < .01, exponent notation below .001); Table E12 analysis labels spelled out; Table E4 Domain filled for eosinophil/CRP rows; version history removed from Legend (see HANDOFF)."
+TAB_VER <- "5.9"
+TAB_NOTE <- "v5.9 (2026-10-14): fmtP rounds half-up (0.295 -> .30, matching text and Fig 1C); r_g written as rg in E9. v5.8 (2026-10-10): all P values and scientific notation in E-tables converted to JACI style at workbook assembly (jaci_cells); E9 internal note removed; tissue labels spelled out. v5.7 (2026-10-08): P values in JACI style (two decimals, three when < .01, exponent notation below .001); Table E12 analysis labels spelled out; Table E4 Domain filled for eosinophil/CRP rows; version history removed from Legend (see HANDOFF)."
 ## v5.7: JACI P-value style — .xx (two decimals), .00x when < .01, a.b × 10⁻ⁿ when < .001, 0 → <1 × 10⁻³⁰⁰
 SUP <- c("0"="⁰","1"="¹","2"="²","3"="³","4"="⁴","5"="⁵","6"="⁶","7"="⁷","8"="⁸","9"="⁹","-"="⁻")
 sup <- function(x) vapply(strsplit(as.character(x),""), function(ch) paste(SUP[ch],collapse=""), "")
+hu <- function(x,d) floor(x*10^d+0.5+1e-9)/10^d   # v5.9: half-up (sprintf 은 0.295 를 .29 로 내림)
 fmtP <- function(p){ p <- as.numeric(p); out <- rep("—", length(p)); ok <- !is.na(p)
   e <- floor(log10(abs(p[ok & p>0]))); m <- p[ok & p>0]/10^e
   expo <- paste0(sprintf("%.1f",m)," × 10",sup(e))
   out[ok & p==0] <- "<1 × 10⁻³⁰⁰"
   out[ok & p>0]  <- ifelse(p[ok & p>0] < 0.001, expo,
-                    ifelse(p[ok & p>0] < 0.01, sub("^0","",sprintf("%.3f",p[ok & p>0])),
-                    ifelse(p[ok & p>0] > 0.995, ">.99", sub("^0","",sprintf("%.2f",p[ok & p>0])))))
+                    ifelse(p[ok & p>0] < 0.01, sub("^0","",sprintf("%.3f",hu(p[ok & p>0],3))),
+                    ifelse(p[ok & p>0] > 0.995, ">.99", sub("^0","",sprintf("%.2f",hu(p[ok & p>0],2))))))
   out }
 ORci <- function(or,l,u) sprintf("%.2f (%.2f–%.2f)", or,l,u)
 NAME <- c(COA="Childhood-onset asthma",AOA="Adult-onset asthma",MDD="Depression (MDD)",
@@ -223,6 +224,7 @@ jaci_cells <- function(d){
       x[sci & !pure] <- sci2sup(x[sci & !pure])
     }
     x <- gsub("Whole_Blood","Whole blood",x,fixed=TRUE); x <- gsub("Brain_Cortex","Brain cortex",x,fixed=TRUE)
+    x <- gsub("r_g","rg",x,fixed=TRUE)   # v5.9: E9 Contrast 열
     d[[j]] <- x }
   d }
 build_wb <- function(SHEETS, title, file) {
