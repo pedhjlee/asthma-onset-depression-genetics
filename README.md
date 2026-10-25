@@ -1,4 +1,4 @@
-# Age at asthma onset and shared genetic liability with depression and anxiety: genetic correlation and Mendelian randomization
+# Age at asthma onset and shared genetic liability with depression and anxiety: a genetic correlation and Mendelian randomization study
 
 Analysis code for a genetic-epidemiology study of the shared genetic architecture and
 Mendelian randomization (MR) relationships between **childhood-onset (COA)** and
@@ -15,6 +15,8 @@ European-ancestry GWAS summary statistics, with replication in FinnGen.
 
 This repository contains **code only**. It does not contain GWAS summary statistics or any
 individual-level data; all inputs are publicly available from the sources listed below.
+
+> **Table numbering.** Step 10 labels the main tables I–IV and the supplementary tables E1–E14 (the format of an earlier submission). In the current manuscript these correspond one-to-one to Tables 1–4 and to Tables S1–S14 in Additional file 2 (e.g. Table E9 = Table S9).
 
 ## Analysis pipeline
 
